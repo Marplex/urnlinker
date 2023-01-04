@@ -5,14 +5,14 @@ plugins {
 }
 
 group = 'com.marplex'
-version = '1.0'
+version = '1.1'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.jsoup:jsoup:1.15.3'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 
@@ -37,7 +37,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.marplex'
             artifactId = 'urnlinker'
-            version = '1.0'
+            version = '1.1'
 
             from components.java
         }

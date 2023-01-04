@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import com.github.marplex.Urnlinker
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +29,7 @@ class UrnlinkerTest {
     private val urnLinker = Urnlinker()
 
     @Test
-    fun costituzioneTest() {
+    fun shouldLinkArticoliCostituzione() {
 
         //Single article
         var string =
@@ -48,7 +49,7 @@ class UrnlinkerTest {
     }
 
     @Test
-    fun decretoLeggeTest() {
+    fun shouldLinkDecretiLegge() {
         //Single article
         val string = "Visto il decreto-legge 16  maggio  2020,  n.  33,  convertito,  con modificazioni"
         val links = urnLinker.link(string)
@@ -58,8 +59,7 @@ class UrnlinkerTest {
     }
 
     @Test
-    fun leggeTest() {
-
+    fun shouldLinkLeggi() {
         //Single article
         val string = """
             convertito,  con
@@ -72,6 +72,17 @@ class UrnlinkerTest {
 
         assertEquals(1, links.size)
         assertEquals("urn:nir:stato:legge:2021-05-28;76", links.first().urn)
+    }
+
+    @Test
+    fun shouldLinkShortformLeggi() {
+        //Short form single article
+        val string = "((PROVVEDIMENTO ABROGATO DALLA L. 29 GENNAIO 2021, N. 7))"
+
+        val links = urnLinker.link(string)
+
+        assertEquals(1, links.size)
+        assertEquals("urn:nir:stato:legge:2021-01-29;7", links.first().urn)
     }
 
 }

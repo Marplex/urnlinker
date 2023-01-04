@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package model
+package com.github.marplex.model
 
 data class Nirlink(
     val urn: String,

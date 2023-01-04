@@ -20,7 +20,9 @@
  * SOFTWARE.
  */
 
-import model.Nirlink
+package com.github.marplex
+
+import com.github.marplex.model.Nirlink
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,7 +30,7 @@ class Urnlinker {
 
     //Regex used to extract "decreti legge", "decreti legislativi" and "leggi"
     private val regexLeggi =
-        "(decreto-legge|legge[^.]|decreto legislativo)((?:[^;]+?[0-9]{1,4}){1,3})(?:[^;]+?[ ;]){0,2}".toRegex()
+        "(decreto-legge|legge[^.]|decreto legislativo|(?i)la l\\.)((?:[^;]+?[0-9]{1,4}){1,3})(?:[^;]+?[ ;]){0,2}".toRegex()
 
     //Regex used to extract "articoli della Costituzione"
     private val regexCostituzione = "articol[oi] [^;\\n]+?della Costituzione".toRegex()
@@ -37,7 +39,7 @@ class Urnlinker {
     private val selectArticoli = "[0-9]{1,3}".toRegex()
 
     //Regexto extract all the info used to generate a link (date and number)
-    private val selectNorma = "([0-9]{1,2})[°]? +(\\w+) +([0-9]{4}).+n\\. +([0-9]{1,3})".toRegex()
+    private val selectNorma = "([0-9]{1,2})[°]? +(\\w+) +([0-9]{4}).+[nN]\\. +([0-9]{1,3})".toRegex()
 
     //Template used to create the URN:NIR link
     private val urnTemplate = "urn:nir:%s:%s:%s;%d"
@@ -56,7 +58,7 @@ class Urnlinker {
         //Sanitize input string
         val normalized = string.replace("  ", " ")
 
-        //Find matches for "decreti legge", "decreti legislativi" and "leggi"
+        //Find matches for "decreti legge", "decreti legislativi" and "leggi" and "l."
         regexLeggi.findAll(normalized).forEach { match ->
             val typeNorma = match.groupValues[1].trim()
             val norma = match.groupValues[2].trim()
@@ -120,9 +122,15 @@ class Urnlinker {
             calendar.time = dateFormat.parse(monthString)
             val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')
 
+            var normalizedType = type
+                .replace("-", ".")
+                .lowercase()
+
+            if (normalizedType == "la l.") normalizedType = "legge"
+
             return urnTemplate.format(
                 "stato",
-                type.replace("-", "."),
+                normalizedType,
                 "$year-$month-$day",
                 number
             )
