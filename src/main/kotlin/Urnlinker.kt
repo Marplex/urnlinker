@@ -110,30 +110,34 @@ class Urnlinker {
     private fun generateUrnFromNormaText(type: String, text: String): String? {
         val result = selectNorma.find(text)?.groupValues
         if (result != null) {
+            try {
+                //Extract info from the regex result
+                val day = result[1]
+                val monthString = result[2]
+                val year = result[3]
+                val number = result[4].toInt()
 
-            //Extract info from the regex result
-            val day = result[1]
-            val monthString = result[2]
-            val year = result[3]
-            val number = result[4].toInt()
+                //Parse date
+                val calendar = Calendar.getInstance()
+                calendar.time = dateFormat.parse(monthString)
+                val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')
 
-            //Parse date
-            val calendar = Calendar.getInstance()
-            calendar.time = dateFormat.parse(monthString)
-            val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')
+                var normalizedType = type
+                    .replace("-", ".")
+                    .lowercase()
 
-            var normalizedType = type
-                .replace("-", ".")
-                .lowercase()
+                if (normalizedType == "la l.") normalizedType = "legge"
+                normalizedType = normalizedType.replace(" ", ".")
 
-            if (normalizedType == "la l.") normalizedType = "legge"
-
-            return urnTemplate.format(
-                "stato",
-                normalizedType,
-                "$year-$month-$day",
-                number
-            )
+                return urnTemplate.format(
+                    "stato",
+                    normalizedType,
+                    "$year-$month-$day",
+                    number
+                )
+            } catch (ex: Exception) {
+                return null
+            }
         } else return null
     }
 }

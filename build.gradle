@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.marplex'
-version = '1.1'
+version = '1.2'
 
 repositories {
     mavenCentral()
@@ -35,11 +35,10 @@ application {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'com.marplex'
+            from(components["java"])
+            groupId = 'com.github.marplex'
             artifactId = 'urnlinker'
-            version = '1.1'
-
-            from components.java
+            version = project.version
         }
     }
 }
